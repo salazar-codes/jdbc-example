@@ -13,12 +13,20 @@ public class jdbcTransactions {
 
             RunScript.execute(connection, new FileReader("src/main/resources/schema.sql"));
             connection.setAutoCommit(false);
+            Savepoint savePoint = null;
 
             try {
 
                 ps.setString(1,"Jimmy");
                 ps.setString(2,"Salz");
                 ps.setString(3,"jmsa");
+                ps.executeUpdate();
+
+                savePoint = connection.setSavepoint("customSavePoint");
+
+                ps.setString(1,"vvvv");
+                ps.setString(2,"ccc");
+                ps.setString(3,"ddd");
                 ps.executeUpdate();
 
                 ps.setString(1,null);
@@ -29,8 +37,15 @@ public class jdbcTransactions {
                 connection.commit();
                 System.out.println("Records persisted");
             }catch (SQLException e){
-                connection.rollback();
-                System.out.println("Rolling back");
+
+                if(savePoint == null){
+                    connection.rollback();
+                    System.out.println("Rolling back");
+                }else{
+                    connection.rollback(savePoint);
+                    System.out.println("Rolling back savePoint");
+                }
+
                 //e.printStackTrace();
             }finally {
                 connection.setAutoCommit(true); // Esta es una buena práctica, comportamiento por defecto
