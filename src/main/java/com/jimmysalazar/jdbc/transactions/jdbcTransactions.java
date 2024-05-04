@@ -29,6 +29,10 @@ public class jdbcTransactions {
                 ps.setString(3,"ddd");
                 ps.executeUpdate();
 
+                // Ya no se considerará el savePoint
+                // generará una SQL exception si se intenta ejecutar
+                connection.releaseSavepoint(savePoint);
+
                 ps.setString(1,null);
                 ps.setString(2,"ff");
                 ps.setString(3,"ccc");
