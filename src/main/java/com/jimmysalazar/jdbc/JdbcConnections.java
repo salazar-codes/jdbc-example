@@ -30,19 +30,20 @@ public class JdbcConnections {
 
             statement.close();
 
-
-            PreparedStatement statementQuery = connection.prepareStatement("SELECT * FROM person");
-
-            ResultSet rs = statementQuery.executeQuery();
+            // Permite ejecutar SQL, más no admite parámetros
+            Statement statementQuery = connection.createStatement();
+            ResultSet rs = statementQuery.executeQuery("SELECT * FROM person");
             while (rs.next()){
                 System.out.printf("\nId[%d] \tName = [%s] \tLastname [%s] Nickname [%s]",rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
             }
 
+            // Permite ejecutar SQL, sí admite parámetros
             PreparedStatement statementDelete = connection.prepareStatement("delete from person");
             rows = statementDelete.executeUpdate(); // Para sentencias DML
             System.out.println("Rows impacted " + rows);
-
             statementDelete.close();
+
+            // No es común, pero el CallableStatement sirve para ejecutar procedimientos almacenados
 
             connection.close();
             System.out.println("Connection closed");
